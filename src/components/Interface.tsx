@@ -2,48 +2,50 @@ import { useRef, useEffect } from "react";
 import { addEffect } from "@react-three/fiber";
 import { useKeyboardControls } from "@react-three/drei";
 
+import { Controls } from "@/types/common";
 import useGame from "../stores/useGame";
 
+let elapsedTime = 0.00;
+
 const Interface = () => {
-  const timeRef = useRef()
+  const timeRef = useRef<HTMLDivElement>(null!);
 
-  const { restartGame, phase } = useGame();
+  const { phase, startTime, endTime, restartGame } = useGame();
 
-  const { forward, backward, left, right, jump } = useKeyboardControls(
-    (state) => state
-  );
+  const forward = useKeyboardControls<Controls>((state) => state.forward);
+  const backward = useKeyboardControls<Controls>((state) => state.backward);
+  const left = useKeyboardControls<Controls>((state) => state.left);
+  const right = useKeyboardControls<Controls>((state) => state.right);
+  const jump = useKeyboardControls<Controls>((state) => state.jump);
 
   useEffect(() => {
     const unsubscribeEffect = addEffect(() => {
-      const gameState = useGame.getState()
-
-      let elapsedTime = 0;
-
-      if (gameState.phase === "playing") {
-        elapsedTime = Date.now() - gameState.startTime
-      } else if (gameState.phase === "ended") {
-        elapsedTime = gameState.endTime - gameState.startTime
+      if (phase === "playing") {
+        elapsedTime = Date.now() - startTime;
+      } else if (phase === "ended") {
+        elapsedTime = endTime - startTime;
       }
 
       elapsedTime /= 1000;
-      elapsedTime = elapsedTime.toFixed(2)
 
       if (timeRef.current) {
-        timeRef.current.textContent = elapsedTime
+        timeRef.current.textContent = elapsedTime.toFixed(2);
       }
-    })
+    });
 
     return () => {
-      unsubscribeEffect()
-    }
-  }, [])
+      unsubscribeEffect();
+    };
+  }, [phase]);
 
-  console.log('rerender');
+  console.log("timeRef", timeRef.current);
 
   return (
     <div className="interface">
       {/* Time */}
-      <div className="time" ref={timeRef}>0.00</div>
+      <div className="time" ref={timeRef}>
+        {elapsedTime}
+      </div>
       {/* Restart */}
       {phase === "ended" && (
         <div className="restart" onClick={restartGame}>

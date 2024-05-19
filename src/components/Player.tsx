@@ -1,17 +1,18 @@
 import * as THREE from "three";
 import { useState, useEffect, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
-import { RigidBody, useRapier } from "@react-three/rapier";
+import { RapierRigidBody, RigidBody, useRapier } from "@react-three/rapier";
 import { useKeyboardControls } from "@react-three/drei";
 
 import useGame from "../stores/useGame";
 
 const Player = () => {
-  const bodyRef = useRef();
+  const bodyRef = useRef<RapierRigidBody>();
+
   const [smoothedCameraPosition] = useState(() => new THREE.Vector3());
   const [smoothedCameraTarget] = useState(() => new THREE.Vector3());
 
-  const { trapsCount, startGame, restartGame, endGame, phase } = useGame();
+  const { trapsCount, startGame, restartGame, endGame } = useGame();
 
   const { rapier, world: rapierWorld } = useRapier();
 
@@ -50,40 +51,42 @@ const Player = () => {
       torque.z -= torqueStrength; // z-axis rotation
     }
 
-    bodyRef.current.applyImpulse(impulse);
-    bodyRef.current.applyTorqueImpulse(torque);
+    bodyRef.current?.applyImpulse(impulse, true);
+    bodyRef.current?.applyTorqueImpulse(torque, true);
 
     /**
      * Camera
      */
-    const bodyPosition = bodyRef.current.translation(); // Vector 3
+    const bodyPosition = bodyRef.current?.translation(); // Vector 3
 
-    const cameraPosition = new THREE.Vector3();
-    cameraPosition.copy(bodyPosition);
-    cameraPosition.z += 2.25;
-    cameraPosition.y += 0.65;
+    if (bodyPosition && smoothedCameraPosition) {
+      const cameraPosition = new THREE.Vector3();
+      cameraPosition.copy(bodyPosition);
+      cameraPosition.z += 2.25;
+      cameraPosition.y += 0.65;
 
-    const cameraTarget = new THREE.Vector3();
-    cameraTarget.copy(bodyPosition);
-    cameraTarget.y += 0.25;
+      const cameraTarget = new THREE.Vector3();
+      cameraTarget.copy(bodyPosition);
+      cameraTarget.y += 0.25;
 
-    // zooming camera (lerping - linear interpolation)
-    smoothedCameraPosition.lerp(cameraPosition, 5 * delta);
-    smoothedCameraTarget.lerp(cameraPosition, 5 * delta);
+      // zooming camera (lerping - linear interpolation)
+      smoothedCameraPosition.lerp(cameraPosition, 5 * delta);
+      smoothedCameraTarget.lerp(cameraPosition, 5 * delta);
 
-    camera.position.copy(smoothedCameraPosition);
-    camera.lookAt(smoothedCameraTarget);
+      camera.position.copy(smoothedCameraPosition);
+      camera.lookAt(smoothedCameraTarget);
 
-    /**
-     * Phases
-     */
-    if (bodyPosition.z < -(trapsCount * 4 + 2)) {
-      endGame();
-    }
+      /**
+       * Phases
+       */
+      if (bodyPosition.z < -(trapsCount * 4 + 2)) {
+        endGame();
+      }
 
-    if (bodyPosition.y < -4) {
-      console.log("AAAAAAHHHHH!");
-      restartGame();
+      if (bodyPosition.y < -4) {
+        console.log("AAAAAAHHHHH!");
+        restartGame();
+      }
     }
   });
 
@@ -129,9 +132,9 @@ const Player = () => {
 
   function jumpHandler() {
     // adding jump effect to body and optimizing by calculating the mass
-    const mass = bodyRef.current.mass();
+    const mass = bodyRef.current?.mass();
 
-    const origin = bodyRef.current.translation();
+    const origin = bodyRef.current?.translation();
     origin.y -= 0.31; // make y close to 0
 
     const direction = { x: 0, y: -1, z: 0 };
@@ -140,14 +143,14 @@ const Player = () => {
     const timeOfImpact = hit?.toi; // distance between ray toward the hit object
 
     if (timeOfImpact < 0.15) {
-      bodyRef.current.applyImpulse({ x: 0, y: mass * 4, z: 0 });
+      bodyRef.current?.applyImpulse({ x: 0, y: mass * 4, z: 0 }, true);
     }
   }
 
   function resetBodyPosition() {
-    bodyRef.current.setTranslation({ x: 0, y: 1, z: 0 }); // position
-    bodyRef.current.setLinvel({ x: 0, y: 0, z: 0 }); // linear velocity (speed and direction)
-    bodyRef.current.setAngvel({ x: 0, y: 0, z: 0 }); // angular velocity (spinning speed)
+    bodyRef.current?.setTranslation({ x: 0, y: 1, z: 0 }, true); // position
+    bodyRef.current?.setLinvel({ x: 0, y: 0, z: 0 }, true); // linear velocity (speed and direction)
+    bodyRef.current?.setAngvel({ x: 0, y: 0, z: 0 }, true); // angular velocity (spinning speed)
   }
 
   return (

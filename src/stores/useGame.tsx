@@ -1,9 +1,22 @@
 import { create } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 
+export type TPhase = "ready" | "playing" | "ended";
+
+export type TGameState = {
+  trapsCount: number;
+  trapsSeed: number;
+  startTime: number;
+  endTime: number;
+  phase: TPhase;
+  startGame: () => void;
+  restartGame: () => void;
+  endGame: () => void;
+};
+
 // subscribeWithSelector allows to subscribe to store changes
 export default create(
-  subscribeWithSelector((set) => {
+  subscribeWithSelector<TGameState>((set) => {
     return {
       trapsCount: 10,
       trapsSeed: 0,
@@ -11,8 +24,8 @@ export default create(
       /**
        * Time
        */
-      startTime: 0,
-      endTime: 0,
+      startTime: 0.0,
+      endTime: 0.0,
 
       /**
        * Phases
@@ -33,7 +46,12 @@ export default create(
         set(({ phase, trapsSeed }) => {
           if (phase === "playing" || phase === "ended") {
             console.log("Restarting game...");
-            return { phase: "ready", trapsSeed: trapsSeed += 1 };
+            return {
+              phase: "ready",
+              trapsSeed: (trapsSeed += 1),
+              startTime: 0.0,
+              endTime: 0.0,
+            };
           }
 
           return {};

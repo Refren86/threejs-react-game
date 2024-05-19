@@ -1,15 +1,22 @@
-import * as THREE from "three";
 import { useRef, useState } from "react";
 import { useFrame } from "@react-three/fiber";
-import { RigidBody } from "@react-three/rapier";
+import { RapierRigidBody, RigidBody } from "@react-three/rapier";
+import { BoxGeometry, Vector3Tuple, Euler, Quaternion } from "three";
+import { Materials } from "@/types/common";
+
+type SpinningTrapBlockProps = {
+  position?: Vector3Tuple;
+  boxGeometry: BoxGeometry;
+  materials: Materials;
+};
 
 const SpinningTrapBlock = ({
   position = [0, 0, 0],
   boxGeometry,
   materials,
-}) => {
-  const spinnerRef = useRef();
-  
+}: SpinningTrapBlockProps) => {
+  const spinnerRef = useRef<RapierRigidBody>();
+
   // -1.5 to 1.5
   const [speed] = useState(
     () => (Math.random() + 0.5) * (Math.random() < 0.5 ? -1 : 1)
@@ -20,8 +27,8 @@ const SpinningTrapBlock = ({
     const elapsedTime = clock.elapsedTime;
 
     // transforming euler to quaternion for kinematic physics
-    const eulerRotation = new THREE.Euler(0, elapsedTime * speed, 0);
-    const quaternionRotation = new THREE.Quaternion();
+    const eulerRotation = new Euler(0, elapsedTime * speed, 0);
+    const quaternionRotation = new Quaternion();
     quaternionRotation.setFromEuler(eulerRotation);
 
     // adding rotation to kinematic body

@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { useMemo } from "react";
+import { Suspense, useMemo } from "react";
 
 import BlockStart from "./BlockStart";
 import SpinningTrapBlock from "./SpinningTrapBlock";
@@ -17,11 +17,17 @@ const materials = {
   wallMaterial: new THREE.MeshStandardMaterial({ color: "slategrey" }),
 };
 
+type LevelProps = {
+  trapsCount?: number;
+  types?: any[];
+  trapsSeed?: number;
+};
+
 const Level = ({
   trapsCount = 5,
   types = [SpinningTrapBlock, ElevatorTrapBlock, SidewayTrapBlock],
-  trapsSeed = 0
-}) => {
+  trapsSeed = 0,
+}: LevelProps) => {
   const blocks = useMemo(() => {
     return Array.from({ length: trapsCount }).map(
       () => types[Math.floor(Math.random() * types.length)]
@@ -30,12 +36,7 @@ const Level = ({
 
   return (
     <>
-      <BlockStart
-        position={[0, 0, 0]}
-        geometry={boxGeometry}
-        boxGeometry={boxGeometry}
-        materials={materials}
-      />
+      <BlockStart geometry={boxGeometry} materials={materials} />
       {blocks.map((BlockComponent, index) => (
         <BlockComponent
           key={index}
@@ -45,12 +46,14 @@ const Level = ({
           materials={materials}
         />
       ))}
-      <BlockEnd
-        position={[0, 0, (trapsCount + 1) * -4]}
-        geometry={boxGeometry}
-        boxGeometry={boxGeometry}
-        materials={materials}
-      />
+      <Suspense fallback={null}>
+        <BlockEnd
+          position={[0, 0, (trapsCount + 1) * -4]}
+          geometry={boxGeometry}
+          materials={materials}
+        />
+      </Suspense>
+
       <Bounds
         length={trapsCount + 2}
         geometry={boxGeometry}

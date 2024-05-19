@@ -1,12 +1,13 @@
-import { StrictMode } from "react";
+import { StrictMode, Suspense } from "react";
 import ReactDOM from "react-dom/client";
 import { Canvas } from "@react-three/fiber";
 import { KeyboardControls } from "@react-three/drei";
 
-import Experience from "./components/Experience.jsx";
+import { Controls } from "./types/common";
+import Experience from "./components/Experience";
+import Interface from "./components/Interface";
 
-import "./style.css";
-import Interface from "./components/Interface.jsx";
+import "./style.scss";
 
 const root = ReactDOM.createRoot(document.querySelector("#root"));
 
@@ -15,23 +16,23 @@ root.render(
     <KeyboardControls
       map={[
         {
-          name: "forward",
+          name: Controls.forward,
           keys: ["ArrowUp", "KeyW"],
         },
         {
-          name: "backward",
+          name: Controls.backward,
           keys: ["ArrowDown", "KeyS"],
         },
         {
-          name: "left",
+          name: Controls.left,
           keys: ["ArrowLeft", "KeyA"],
         },
         {
-          name: "right",
+          name: Controls.right,
           keys: ["ArrowRight", "KeyD"],
         },
         {
-          name: "jump",
+          name: Controls.jump,
           keys: ["Space"],
         },
       ]}

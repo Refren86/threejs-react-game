@@ -1,13 +1,22 @@
 import { useRef, useState } from "react";
+import { BoxGeometry, Vector3Tuple } from "three";
 import { useFrame } from "@react-three/fiber";
-import { RigidBody } from "@react-three/rapier";
+import { RapierRigidBody, RigidBody } from "@react-three/rapier";
 
-const SidewayTrapBlock = ({
+import { Materials } from "@/types/common";
+
+type ElevatorTrapBlockProps = {
+  position?: Vector3Tuple;
+  boxGeometry: BoxGeometry;
+  materials: Materials;
+};
+
+const ElevatorTrapBlock = ({
   position = [0, 0, 0],
   boxGeometry,
   materials,
-}) => {
-  const sidewayTrapRef = useRef();
+}: ElevatorTrapBlockProps) => {
+  const elevatorRef = useRef<RapierRigidBody>();
 
   const [timeOffset] = useState(() => Math.random() * Math.PI * 2);
 
@@ -15,11 +24,11 @@ const SidewayTrapBlock = ({
     // adjusted to all HZ monitor frame-rates
     const elapsedTime = clock.elapsedTime;
 
-    const xAxisTransition = Math.sin(elapsedTime + timeOffset);
-    
-    sidewayTrapRef?.current?.setNextKinematicTranslation({
-      x: position[0] + xAxisTransition,
-      y: position[1],
+    const yAxisTransition = Math.sin(elapsedTime + timeOffset) + 1;
+
+    elevatorRef?.current?.setNextKinematicTranslation({
+      x: position[0],
+      y: position[1] + yAxisTransition,
       z: position[2],
     });
   });
@@ -39,7 +48,7 @@ const SidewayTrapBlock = ({
 
       {/* Elevating obstacle, restitution = bounciness, friction = rubbing */}
       <RigidBody
-        ref={sidewayTrapRef}
+        ref={elevatorRef}
         type="kinematicPosition"
         restitution={0.2}
         friction={0}
@@ -47,8 +56,8 @@ const SidewayTrapBlock = ({
         <mesh
           geometry={boxGeometry}
           material={materials.obstacleMaterial}
-          scale={[2, 2, 0.6]}
-          position-y={1}
+          scale={[3.5, 0.4, 0.6]}
+          position={[0, 0.3, 0]}
           castShadow
           receiveShadow
         />
@@ -57,4 +66,4 @@ const SidewayTrapBlock = ({
   );
 };
 
-export default SidewayTrapBlock;
+export default ElevatorTrapBlock;

@@ -1,9 +1,9 @@
 import { Physics } from "@react-three/rapier";
 
-import Lights from "./Lights.jsx";
-import Level from "./Level.jsx";
-import Player from "./Player.jsx";
-import useGame from "../stores/useGame.jsx";
+import Lights from "./Lights";
+import Level from "./Level";
+import Player from "./Player";
+import useGame from "../stores/useGame";
 
 export default function Experience() {
   const trapsCount = useGame((state) => state.trapsCount);

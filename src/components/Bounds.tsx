@@ -1,6 +1,13 @@
+import { BufferGeometry, MeshStandardMaterial } from "three";
 import { CuboidCollider, RigidBody } from "@react-three/rapier";
 
-const Bounds = ({ length = 1, geometry, material }) => {
+type BoundsProps = {
+  length?: number;
+  geometry: BufferGeometry;
+  material: MeshStandardMaterial;
+};
+
+const Bounds = ({ length = 1, geometry, material }: BoundsProps) => {
   return (
     <RigidBody type="fixed" restitution={0.2} friction={0}>
       {/* Left wall */}

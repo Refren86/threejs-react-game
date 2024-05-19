@@ -1,13 +1,22 @@
 import { useRef, useState } from "react";
 import { useFrame } from "@react-three/fiber";
-import { RigidBody } from "@react-three/rapier";
+import { RapierRigidBody, RigidBody } from "@react-three/rapier";
+import { BoxGeometry, Vector3Tuple } from "three";
 
-const ElevatorTrapBlock = ({
+import { Materials } from "@/types/common";
+
+type SidewayTrapBlockProps = {
+  position?: Vector3Tuple;
+  boxGeometry: BoxGeometry;
+  materials: Materials;
+};
+
+const SidewayTrapBlock = ({
   position = [0, 0, 0],
   boxGeometry,
   materials,
-}) => {
-  const elevatorRef = useRef();
+}: SidewayTrapBlockProps) => {
+  const sidewayTrapRef = useRef<RapierRigidBody>();
 
   const [timeOffset] = useState(() => Math.random() * Math.PI * 2);
 
@@ -15,11 +24,11 @@ const ElevatorTrapBlock = ({
     // adjusted to all HZ monitor frame-rates
     const elapsedTime = clock.elapsedTime;
 
-    const yAxisTransition = Math.sin(elapsedTime + timeOffset) + 1;
-    
-    elevatorRef?.current?.setNextKinematicTranslation({
-      x: position[0],
-      y: position[1] + yAxisTransition,
+    const xAxisTransition = Math.sin(elapsedTime + timeOffset);
+
+    sidewayTrapRef?.current?.setNextKinematicTranslation({
+      x: position[0] + xAxisTransition,
+      y: position[1],
       z: position[2],
     });
   });
@@ -39,7 +48,7 @@ const ElevatorTrapBlock = ({
 
       {/* Elevating obstacle, restitution = bounciness, friction = rubbing */}
       <RigidBody
-        ref={elevatorRef}
+        ref={sidewayTrapRef}
         type="kinematicPosition"
         restitution={0.2}
         friction={0}
@@ -47,8 +56,8 @@ const ElevatorTrapBlock = ({
         <mesh
           geometry={boxGeometry}
           material={materials.obstacleMaterial}
-          scale={[3.5, 0.4, 0.6]}
-          position-y={0.3}
+          scale={[2, 2, 0.6]}
+          position-y={1}
           castShadow
           receiveShadow
         />
@@ -57,4 +66,4 @@ const ElevatorTrapBlock = ({
   );
 };
 
-export default ElevatorTrapBlock;
+export default SidewayTrapBlock;
