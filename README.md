@@ -1,5 +1,6 @@
 Environment used:
-- NODE/NPM: Node v20.11.0
+- NODE: v20.11.0
+- Typescript: 5.1.6
 - OS: Windows 11 Pro
 - Editor: VSCode
 
