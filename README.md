@@ -7,3 +7,6 @@ Environment used:
 To run the project:
 - Clone the repository locally
 - Open terminal and run command <mark>npm run start:dev</mark>
+
+Deployed link:
+https://threejs-react-game.pages.dev/
