@@ -28,8 +28,9 @@ export function buildLoaders({ mode }: BuildOptions): ModuleOptions["rules"] {
     ],
   };
 
+  // images, 3D files, fonts
   const assetsLoader = {
-    test: /\.(png|jpg|jpeg|gif)$/i,
+    test: /\.(png|jpg|jpeg|gif|glb|gltf|woff|woff2|eot|ttf|otf)$/i,
     type: "asset/resource",
   };
 
@@ -55,16 +56,6 @@ export function buildLoaders({ mode }: BuildOptions): ModuleOptions["rules"] {
       },
     ],
   };
-
-  // TODO: DOUBLE CHECK IF NEEDED!
-  // const glslLoader = {
-  //   test: /\.(frag|vert|glsl)$/,
-  //   exclude: /node_modules/,
-  //   use: [
-  //     'raw-loader',
-  //     'glslify-loader'
-  //   ]
-  // }
 
   // ts-loader knows how to work with jsx/tsx
   // !!! If I do not use typescript(ts-loader), I must use babel-loader instead with jsx !!!
