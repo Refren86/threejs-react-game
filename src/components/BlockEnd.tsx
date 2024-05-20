@@ -3,6 +3,9 @@ import { BufferGeometry, Vector3Tuple } from "three";
 
 import { Materials } from "@/types/common";
 
+import FinishMaterial from "@/assets/finish.glb";
+import BebasFont from "@/assets/bebas-neue-v9-latin-regular.woff";
+
 type BlockEndProps = {
   position?: Vector3Tuple;
   geometry: BufferGeometry;
@@ -14,7 +17,7 @@ const BlockEnd = ({
   geometry,
   materials,
 }: BlockEndProps) => {
-  const finish = useGLTF("./finish.glb");
+  const finish = useGLTF(FinishMaterial);
 
   finish.scene.children.forEach((mesh) => {
     mesh.castShadow = true;
@@ -23,7 +26,7 @@ const BlockEnd = ({
   return (
     <group position={position}>
       <Text
-        font="./bebas-neue-v9-latin-regular.woff"
+        font={BebasFont}
         scale={1}
         position={[0, 2.5, 2]}
       >
