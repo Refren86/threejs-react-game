@@ -44,17 +44,6 @@ export function buildPlugins({
         chunkFilename: "css/[name].[contenthash:8].css",
       })
     );
-    plugins.push(
-      new CopyPlugin({
-        patterns: [
-          // will move the locales folder to the build folder
-          {
-            from: path.resolve(paths.public, "locales"),
-            to: path.resolve(paths.output, "locales"),
-          },
-        ],
-      })
-    );
   }
 
   if (analyzer) {
